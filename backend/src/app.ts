@@ -15,6 +15,16 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || process.env.DEV_PORT;
 
+// Connect to Mongo DB
+mongoose.set('strictQuery', false);
+const mongoURI: any = process.env.MONGODB_URI || process.env.DEV_MONGODB_URI;
+
+try {
+  await mongoose.connect(mongoURI);
+} catch (err: any) {
+  throw new Error(err);
+}
+
 initializePassport(passport);
 
 app.use(compression());
@@ -27,7 +37,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   console.log(req.body);
   next();
-})
+});
 
 app.use('/', indexRouter);
 
