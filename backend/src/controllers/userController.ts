@@ -28,25 +28,37 @@ const signup_post = [
       });
     }
 
-    return bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
+    return User.find({ username: req.body.username }).exec((err, user) => {
       if (err)
         return res.status(500).json({
           message: 'Something went wrong',
         });
 
-      const user = new User({
-        username: req.body.username,
-        password: hashedPassword,
-      });
+      if (user.length > 0)
+        return res.status(400).json({
+          message: 'Username unavailable',
+        });
 
-      return user.save((err: unknown) => {
+      return bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
         if (err)
           return res.status(500).json({
             message: 'Something went wrong',
           });
 
-        return res.status(201).json({
-          message: 'User create',
+        const user = new User({
+          username: req.body.username,
+          password: hashedPassword,
+        });
+
+        return user.save((err: unknown) => {
+          if (err)
+            return res.status(500).json({
+              message: 'Something went wrong',
+            });
+
+          return res.status(201).json({
+            message: 'User create',
+          });
         });
       });
     });
