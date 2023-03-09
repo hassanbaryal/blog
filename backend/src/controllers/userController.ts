@@ -2,7 +2,7 @@ import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
-import User from '../models/user.js';
+import User, { IUser } from '../models/user.js';
 import { Request, Response } from 'express';
 
 // Create user on POST
@@ -80,7 +80,7 @@ const login_post = [
     passport.authenticate(
       'local',
       { session: false },
-      (err: Error, user: any, info: unknown) => {
+      (err: Error, user: IUser, info: unknown) => {
         // If error or no user found
         if (err || !user) {
           return res.status(400).json(info);
@@ -91,22 +91,17 @@ const login_post = [
             return res.status(500).json({
               message: 'Something went wrong',
             });
-          
+
           const jwtSecret = process.env.JWT_SECRET || 'jwtsecret';
 
-          const token = jwt.sign(
-            user.toJSON(),
-            jwtSecret,
-            {
-              expiresIn: '1d'
-            }
-          );
+          const token = jwt.sign({ user }, jwtSecret, {
+            expiresIn: '1d',
+          });
           return res.status(200).json({ user, token: `Bearer ` + token });
         });
       }
     )(req, res);
   },
 ];
-
 
 export { signup_post, login_post };
