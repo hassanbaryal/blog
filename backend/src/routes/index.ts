@@ -9,6 +9,10 @@ router.get('/', (req, res) => {
   });
 });
 
+// POST create new user on signup
 router.post('/signup', userController.signup_post);
+
+// POST log user in
+router.post('/login', userController.login_post);
 
 export default router;
