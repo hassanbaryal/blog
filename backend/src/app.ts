@@ -26,6 +26,7 @@ try {
 }
 
 initializePassport(passport);
+import './middlewares/verifyToken.mw.js';
 
 app.use(compression());
 app.use(helmet());
