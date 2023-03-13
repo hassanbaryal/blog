@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
+import async from 'async';
 import Post from '../models/post.js';
+import Comment from '../models/comment.js';
 
 // Get list of all post on GET
 const allPosts_get = (req: Request, res: Response) => {
@@ -18,21 +20,42 @@ const allPosts_get = (req: Request, res: Response) => {
 
 // Get post by id on GET
 const post_get = (req: Request, res: Response) => {
-  Post.findById(req.params.id).exec((err, post) => {
-    if (err)
-      return res.status(500).json({
-        message: 'Something went wrong while fetching post...',
-      });
+  return async.parallel(
+    {
+      post(cb) {
+        Post.findById(req.params.id).exec(cb);
+      },
+      comments(cb) {
+        Comment.find().exec(cb);
+      },
+    },
+    (err, results) => {
+      if (err)
+        return res.status(500).json({
+          message: 'Something went wrong...',
+        });
 
-    if (!post)
-      return res.status(404).json({
-        message: 'Post not found...',
+      return res.status(200).json({
+        post: results.post,
+        comments: results.comments,
       });
+    }
+  );
+  // Post.findById(req.params.id).exec((err, post) => {
+  //   if (err)
+  //     return res.status(500).json({
+  //       message: 'Something went wrong while fetching post...',
+  //     });
 
-    return res.status(200).json({
-      post,
-    });
-  });
+  //   if (!post)
+  //     return res.status(404).json({
+  //       message: 'Post not found...',
+  //     });
+
+  //   return res.status(200).json({
+  //     post,
+  //   });
+  // });
 };
 
 // Create post on POST
@@ -59,7 +82,7 @@ const createPost_post = [
     const post = new Post({
       title: req.body.title,
       body: req.body.body,
-      userId: user._id,
+      user: user._id,
       published: req.body.published === 'true' ? true : false,
       likes: [],
     });
