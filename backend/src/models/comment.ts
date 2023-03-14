@@ -11,7 +11,7 @@ export interface IComment {
 }
 
 const commentSchema = new Schema<IComment>({
-  text: { type: String, max: 300, required: true },
+  text: { type: String, max: 1000, required: true },
   timeStamp: { type: Date, default: Date.now(), required: true },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
   post: { type: Schema.Types.ObjectId, ref: 'Post' },
