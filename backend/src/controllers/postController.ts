@@ -96,4 +96,62 @@ const createPost_post = [
   },
 ];
 
-export { allPosts_get, post_get, createPost_post };
+// Delete post and associated comments on DELETE
+const deletePost_delete = (req: Request, res: Response) => {
+  async.parallel(
+    {
+      posts(cb) {
+        Post.deleteOne({ _id: req.params.id }).exec(cb);
+      },
+      comments(cb) {
+        Comment.deleteMany({ post: req.params.id }).exec(cb);
+      },
+    },
+    (err) => {
+      if (err)
+        return res.status(500).json({
+          message: 'Something went wrong while saving post...',
+        });
+
+      return res.status(204).json();
+    }
+  );
+};
+
+// Update like status of post on PUT
+const changeLikeStatus_put = (req: Request, res: Response) => {
+  Post.findById(req.params.id).exec((err, post) => {
+    if (err)
+      return res.status(500).json({
+        message: 'Something went wrong while saving post...',
+      });
+
+    const { user }: any = req.user;
+
+    if (!post?.likes.includes(user._id)) {
+      post?.likes.push(user._id);
+    } else {
+      const index = post?.likes.findIndex((id) => id === user._id);
+      post?.likes.splice(index, 1);
+    }
+
+    return post?.save((error) => {
+      if (error)
+        return res.status(500).json({
+          message: 'Something went wrong while saving post...',
+        });
+
+      return res.status(201).json({
+        message: 'Comment updated successfully!',
+      });
+    });
+  });
+};
+
+export {
+  allPosts_get,
+  post_get,
+  createPost_post,
+  deletePost_delete,
+  changeLikeStatus_put,
+};
