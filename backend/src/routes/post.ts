@@ -15,4 +15,10 @@ router.get('/:id', postController.post_get);
 // POST create a post
 router.post('/create', postController.createPost_post);
 
+// DELETE delete comment
+router.delete('/delete/:id', postController.deletePost_delete);
+
+// PUT update like status
+router.put('/like/:id', postController.changeLikeStatus_put);
+
 export default router;
