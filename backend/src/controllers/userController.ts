@@ -13,7 +13,7 @@ const signup_post = [
     .isAlphanumeric()
     .escape()
     .withMessage(
-      'Username is required (max 20 characters, letters and numbers only'
+      'Username is required (max 20 characters, letters and numbers only)'
     ),
   body('password')
     .trim()
@@ -53,11 +53,11 @@ const signup_post = [
         return user.save((err: unknown) => {
           if (err)
             return res.status(500).json({
-              message: 'Something went wrong',
+              message: 'Something went wrong...',
             });
 
           return res.status(201).json({
-            message: 'User create',
+            message: 'User successfully created!',
           });
         });
       });
@@ -73,7 +73,7 @@ const login_post = [
     .isAlphanumeric()
     .escape()
     .withMessage(
-      'Username is required (max 20 characters, letters and numbers only'
+      'Username is required (max 20 characters, letters and numbers only)'
     ),
   body('password')
     .trim()
@@ -101,7 +101,7 @@ const login_post = [
         req.login(user, { session: false }, (error: Error) => {
           if (error)
             return res.status(500).json({
-              message: 'Something went wrong',
+              message: 'Something went wrong...',
             });
 
           const jwtSecret = process.env.JWT_SECRET || 'jwtsecret';
