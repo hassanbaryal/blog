@@ -10,6 +10,8 @@ import session from 'express-session';
 import dotenv from 'dotenv';
 import initializePassport from './middlewares/passport-config.mw.js';
 import indexRouter from './routes/index.js';
+import postRouter from './routes/post.js';
+import commentRouter from './routes/comment.js';
 
 dotenv.config();
 const app = express();
@@ -34,12 +36,8 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// DELETE LATER
-app.use((req, res, next) => {
-  console.log(req.body);
-  next();
-});
-
+app.use('/comment', commentRouter);
+app.use('/post', postRouter);
 app.use('/', indexRouter);
 
 app.listen(port, () => {
