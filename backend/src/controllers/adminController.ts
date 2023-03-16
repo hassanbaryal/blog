@@ -42,7 +42,7 @@ const createAdminUser_post = [
         return res.status(500).json({
           message: 'Something went wrong...',
         });
-      if (user)
+      if (user.length > 0)
         return res.status(400).json({
           errors: [{ msg: 'Username already exists' }],
         });
