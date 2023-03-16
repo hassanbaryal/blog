@@ -1,13 +1,14 @@
 import express from 'express';
 import passport from 'passport';
 import * as postController from '../controllers/postController.js';
+import verifyAdmin from '../middlewares/verifyAdmin.mw.js';
 
 const router = express.Router();
 
 router.all('*', passport.authenticate('jwt', { session: false }));
 
 // GET all posts
-router.get('/', postController.allPosts_get);
+router.get('/', verifyAdmin, postController.allPosts_get);
 
 // GET all published posts
 router.get('/published', postController.allPublishedPosts_get);
@@ -16,15 +17,19 @@ router.get('/published', postController.allPublishedPosts_get);
 router.get('/:id', postController.post_get);
 
 // POST create a post
-router.post('/create', postController.createPost_post);
+router.post('/create', verifyAdmin, postController.createPost_post);
 
-// DELETE delete comment
-router.delete('/delete/:id', postController.deletePost_delete);
+// DELETE delete post
+router.delete('/delete/:id', verifyAdmin, postController.deletePost_delete);
 
 // PUT update like status
 router.put('/like/:id', postController.changeLikeStatus_put);
 
 // PUT update published status
-router.put('/publish/:id', postController.updatePublishedStatus_put);
+router.put(
+  '/publish/:id',
+  verifyAdmin,
+  postController.updatePublishedStatus_put
+);
 
 export default router;
