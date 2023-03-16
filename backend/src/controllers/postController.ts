@@ -29,6 +29,31 @@ const allPosts_get = (req: Request, res: Response) => {
   );
 };
 
+// Get all published posts on GET
+const allPublishedPosts_get = (req: Request, res: Response) => {
+  return async.parallel(
+    {
+      posts(cb) {
+        Post.find({ published: true }).populate('user').exec(cb);
+      },
+      comments(cb) {
+        Comment.find().exec(cb);
+      },
+    },
+    (err, results) => {
+      if (err)
+        return res.status(500).json({
+          message: 'Something went wrong...',
+        });
+
+      return res.status(200).json({
+        posts: results.posts,
+        comments: results.comments,
+      });
+    }
+  );
+};
+
 // Get post by id on GET
 const post_get = (req: Request, res: Response) => {
   return async.parallel(
@@ -142,7 +167,30 @@ const changeLikeStatus_put = (req: Request, res: Response) => {
         });
 
       return res.status(201).json({
-        message: 'Comment updated successfully!',
+        message: 'Post updated successfully!',
+      });
+    });
+  });
+};
+
+// Update published status on PUT
+const updatePublishedStatus_put = (req: Request, res: Response) => {
+  Post.findById(req.params.id).exec((err, post) => {
+    if (err)
+      return res.status(500).json({
+        message: 'Something went wrong...',
+      });
+
+    if (post?.published !== undefined) post.published = !post?.published;
+
+    post?.save((error) => {
+      if (error)
+        return res.status(500).json({
+          message: 'Something went wrong while saving post...',
+        });
+
+      return res.status(201).json({
+        message: 'Post updated successfully!',
       });
     });
   });
@@ -150,8 +198,10 @@ const changeLikeStatus_put = (req: Request, res: Response) => {
 
 export {
   allPosts_get,
+  allPublishedPosts_get,
   post_get,
   createPost_post,
   deletePost_delete,
   changeLikeStatus_put,
+  updatePublishedStatus_put,
 };
