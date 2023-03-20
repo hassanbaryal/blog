@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import initializePassport from './middlewares/passport-config.mw.js';
 import indexRouter from './routes/index.js';
 import postRouter from './routes/post.js';
@@ -29,6 +30,9 @@ import './middlewares/verifyToken.mw.js';
 
 app.use(compression());
 app.use(helmet());
+app.use(cors({
+  origin: "http://localhost:5173"
+}))
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
