@@ -15,8 +15,9 @@
     "ecmaVersion": "latest",
     "sourceType": "module",
     "project": ["**/tsconfig.json"]
-    // "extraFileExtensions": [".cjs"]
   },
   "plugins": ["react"],
-  "rules": {}
+  "rules": {
+    "import/no-extraneous-dependencies": "off"
+  }
 }
